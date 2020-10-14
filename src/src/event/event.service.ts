@@ -3,7 +3,6 @@ import {classToPlain} from "class-transformer";
 import Event from "./event.dto";
 import {EventRepo} from "./event.repo";
 import * as AWS from "aws-sdk";
-import Boom = require("@hapi/boom");
 
 type NewEvent = Omit<Event, "createdAt" | "id" | "itemType" | "ttl" | "eventType">
 
