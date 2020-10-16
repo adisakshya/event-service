@@ -47,7 +47,7 @@ export class EventController {
     private async reminderEvent(eventData: any): Promise<void> {
         this.logger.log(`Recieved ${eventData.MessageAttributes.eventType.Value} event`);
         switch(eventData.MessageAttributes.eventType.Value) {
-            case 'reminder:added':
+            case 'reminder:created':
                 await this.eventService.reminderAdded(JSON.parse(eventData.Message));
                 break;
             case 'reminder:updated':

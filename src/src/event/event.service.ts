@@ -8,10 +8,10 @@ type NewEvent = Omit<Event, "createdAt" | "id" | "itemType" | "ttl" | "eventType
 
 @Injectable()
 export class EventService {
+    private readonly logger = new Logger("Event Service");
     constructor(private readonly eventRepo: EventRepo,
                 @Inject("AWS-SNS")
-                private readonly sns: AWS.SNS,
-                private readonly logger: Logger) {
+                private readonly sns: AWS.SNS) {
     }
 
     private async createEvent(params: Pick<Event, "itemId" | "itemType" | "eventType" | "eventData" | "userId">): Promise<Event> {
