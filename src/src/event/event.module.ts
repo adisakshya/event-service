@@ -4,6 +4,7 @@ import {Logger, Module} from '@nestjs/common';
 import * as AWS from "aws-sdk";
 import {EventRepo} from "./event.repo";
 import {EventService} from "./event.service";
+import {EventController} from "./event.controller";
 
 @Module({
     providers: [
@@ -21,8 +22,8 @@ import {EventService} from "./event.service";
         },
         EventService,
     ],
+    controllers: [EventController],
     imports: [CommonModule],
-    exports: [EventService]
 })
 export class EventModule {
 }

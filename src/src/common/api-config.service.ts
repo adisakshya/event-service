@@ -15,11 +15,11 @@ export class ApiConfigService {
         return this.configService.get<string>('NODE_ENV') === 'production';
     }
 
-    get eventTable():string{
+    get eventTable(): string {
         return this.configService.get<string>('EVENT_STORE') ?? 'event-store';
     }
 
-    get notificationTopicArn():string{
+    get notificationTopicArn(): string{
         return this.configService.get<string>('NOTIFICATION_EVENTS_TOPIC_ARN') ?? 'arn:aws:sns:us-east-1:000000000000:notification';
     }
 }
