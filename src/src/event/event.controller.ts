@@ -2,7 +2,7 @@ import {Controller} from '@nestjs/common';
 import {Logger} from '@nestjs/common';
 import {Consumer} from 'sqs-consumer';
 import {EventService} from "@event/event.service";
-import { NotificationService } from '@notification/notification.service';
+import {NotificationService} from '@notification/notification.service';
 
 @Controller('event')
 export class EventController {
@@ -71,31 +71,52 @@ export class EventController {
         const eventMessage = JSON.parse(eventData.Message);
         switch(eventData.MessageAttributes.eventType.Value) {
             case 'notification:create':
-                await this.notificationService.create(eventMessage.userId, {
+                const createdNotification = await this.notificationService.create({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
                     reminderId: eventMessage.itemId,
                     deliverAt: eventMessage.eventData.date
+                });
+                await this.eventService.notificationCreated({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
+                    itemId: createdNotification.id,
+                    eventData: {...createdNotification}
                 });
                 break;
             case 'notification:update':
-                await this.notificationService.update(eventMessage.userId, {
+                const updatedNotification = await this.notificationService.update({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
                     reminderId: eventMessage.itemId,
                     deliverAt: eventMessage.eventData.date
+                });
+                if(!updatedNotification) {
+                    break;
+                }
+                await this.eventService.notificationUpdated({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
+                    itemId: updatedNotification.id,
+                    eventData: {...updatedNotification}
                 });
                 break;
             case 'notification:delete':
-                await this.notificationService.delete(eventMessage.userId, {
+                const deletedNotification = await this.notificationService.delete({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
                     reminderId: eventMessage.itemId,
                     deliverAt: eventMessage.eventData.date
                 });
-                break;
-            case 'notification:created':
-                this.eventService.notificationAdded();
-                break;
-            case 'notification:updated':
-                this.eventService.notificationUpdated();
-                break;
-            case 'notification:deleted':
-                this.eventService.notificationDeleted();
+                if(!deletedNotification) {
+                    break;
+                }
+                await this.eventService.notificationDeleted({
+                    userId: eventMessage.userId,
+                    userEmail: eventMessage.userEmail,
+                    itemId: deletedNotification.id,
+                    eventData: {...deletedNotification}
+                });
                 break;
             default:
                 this.logger.error('Unknown event-type');

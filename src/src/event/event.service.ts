@@ -10,9 +10,9 @@ type NewEvent = Omit<Event, "createdAt" | "id" | "itemType" | "ttl" | "eventType
 @Injectable()
 export class EventService {
     private readonly logger = new Logger("Event Service");
-    constructor(private readonly eventRepo: EventRepo,
-                @Inject('AWS-SNS')
+    constructor(@Inject('AWS-SNS')
                 private readonly sns: AWS.SNS,
+                private readonly eventRepo: EventRepo,
                 private readonly configService: ApiConfigService) {
     }
 
@@ -24,7 +24,7 @@ export class EventService {
     }
 
     public async reminderAdded(event: NewEvent & { userEmail: string }): Promise<void> {
-        this.sns.publish({
+        await this.sns.publish({
             Message: JSON.stringify({
                 userId: event.userId,
                 userEmail: event.userEmail,
@@ -50,7 +50,7 @@ export class EventService {
     }
 
     public async reminderUpdated(event: NewEvent & { userEmail: string, bookmark: any }): Promise<void> {
-        this.sns.publish({
+        await this.sns.publish({
             Message: JSON.stringify({
                 userId: event.userId,
                 userEmail: event.userEmail,
@@ -76,7 +76,7 @@ export class EventService {
     }
 
     public async reminderDeleted(event: NewEvent & { userEmail: string}): Promise<void> {
-        this.sns.publish({
+        await this.sns.publish({
             Message: JSON.stringify({
                 userId: event.userId,
                 userEmail: event.userEmail,
@@ -101,16 +101,25 @@ export class EventService {
         });
     }
 
-    public async notificationAdded() {
-        this.logger.debug('Add notification:created event in event-store');
+    public async notificationCreated(event: NewEvent & { userEmail: string}): Promise<void> {
+        await this.createEvent({
+            ...event, eventData: classToPlain(event.eventData),
+            eventType: "notification:created", itemType: "notification"
+        });
     }
 
-    public async notificationUpdated() {
-        this.logger.debug('Add notification:updated event in event-store');
+    public async notificationUpdated(event: NewEvent & { userEmail: string}): Promise<void> {
+        await this.createEvent({
+            ...event, eventData: classToPlain(event.eventData),
+            eventType: "notification:updated", itemType: "notification"
+        });
     }
 
-    public async notificationDeleted() {
-        this.logger.debug('Add notification:deleted event in event-store');
+    public async notificationDeleted(event: NewEvent & { userEmail: string}): Promise<void> {
+        await this.createEvent({
+            ...event, eventData: classToPlain(event.eventData),
+            eventType: "notification:deleted", itemType: "notification"
+        });
     }
 
 }
