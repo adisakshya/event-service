@@ -39,7 +39,7 @@ export class ApiConfigService {
         return this.configService.get<string>('EVENT_STORE') ?? 'event-store';
     }
 
-    get notificationTopicArn(): string{
-        return this.configService.get<string>('NOTIFICATION_EVENTS_TOPIC_ARN') ?? 'arn:aws:sns:us-east-1:000000000000:notification';
+    get eventTopicArn(): string{
+        return this.configService.get<string>('EVENT_TOPIC_ARN') ?? 'arn:aws:sns:us-east-1:000000000000:event';
     }
 }

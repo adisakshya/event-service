@@ -2,6 +2,7 @@ import {Controller} from '@nestjs/common';
 import {Logger} from '@nestjs/common';
 import {Consumer} from 'sqs-consumer';
 import {EventService} from "@event/event.service";
+import { NotificationService } from '@notification/notification.service';
 
 @Controller('event')
 export class EventController {
@@ -22,7 +23,8 @@ export class EventController {
         this.logger.error(err);
     });
 
-    constructor(private readonly eventService: EventService ) {
+    constructor(private readonly notificationService: NotificationService,
+                private readonly eventService: EventService) {
         this.app.start();
         this.logger.log(`SQS event consumer running: ${this.app.isRunning}`);
     }
@@ -38,6 +40,9 @@ export class EventController {
         switch(eventData.MessageAttributes.eventItemType.Value) {
             case 'reminder':
                 await this.reminderEvent(eventData);
+                break;
+            case 'notification':
+                await this.notificationEvent(eventData);
                 break;
             default:
                 this.logger.error('Unknown event-item');
@@ -55,6 +60,42 @@ export class EventController {
                 break;
             case 'reminder:deleted':
                 await this.eventService.reminderDeleted(JSON.parse(eventData.Message));
+                break;
+            default:
+                this.logger.error('Unknown event-type');
+        }
+    }
+
+    private async notificationEvent(eventData: any): Promise<void> {
+        this.logger.log(`Recieved ${eventData.MessageAttributes.eventType.Value} event`);
+        const eventMessage = JSON.parse(eventData.Message);
+        switch(eventData.MessageAttributes.eventType.Value) {
+            case 'notification:create':
+                await this.notificationService.create(eventMessage.userId, {
+                    reminderId: eventMessage.itemId,
+                    deliverAt: eventMessage.eventData.date
+                });
+                break;
+            case 'notification:update':
+                await this.notificationService.update(eventMessage.userId, {
+                    reminderId: eventMessage.itemId,
+                    deliverAt: eventMessage.eventData.date
+                });
+                break;
+            case 'notification:delete':
+                await this.notificationService.delete(eventMessage.userId, {
+                    reminderId: eventMessage.itemId,
+                    deliverAt: eventMessage.eventData.date
+                });
+                break;
+            case 'notification:created':
+                this.eventService.notificationAdded();
+                break;
+            case 'notification:updated':
+                this.eventService.notificationUpdated();
+                break;
+            case 'notification:deleted':
+                this.eventService.notificationDeleted();
                 break;
             default:
                 this.logger.error('Unknown event-type');
