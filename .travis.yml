@@ -37,3 +37,13 @@ jobs:
         - yarn install
         # Run tests
         - yarn test --passWithNoTests
+
+notifications:
+  email: false
+  slack:
+    rooms:
+      secure: lshRtQWOEbBvlWqvd0P4mqrBuXL+bEesvAOQA3vgIifTj0Pn2XjOqbXM1mY9K2ZqWjM+WUTLuxy4Dm8SF/eewR9tcGmvB8zTIvkNTFbevNQAiw9BcXWQrsh+1u0HXw3CqZrrY3UJdZkXoEz+a47jsMjlqs3DNbZbv9rhGjEcaQs772xjVtSdmkcUO6y2XvnPpra2w9eqYjRStLW7Xzka1s5d/X7vbmWCTYrVGhSKnwVehyQ97pUyxPQbv1+7UHXs2dwiiz+BCtI7PaEL9mWy6FUbIjaE+aMqOxrNpOxIDJtq4tk3di5BvjXQr43HYjSHOcFJj9BezA1WIEQ2qEY1iZ/+n8DV7/1syKf6psiI0d5X/NFmy+25es0I90f5pzpWg5ayRg83NQpknhnV36Nv4FivqnDuKwxvNQW6y1Y+beF8KrsZBuScvg4a1WoGwHrS81MlSOo+aQS4dklLmkFAnncHlocG4am/PojDKgWI6Bmm0/hcSDLaVRdFc18H2tyixE0pqf6ltunD1Qb10qm2zSn7H+szZ1IEufVBNz8EBgmzqKDP4RJPUFJZ2RQNgULyBcxV3xdH6U0D1k5jEPSnSBZz3gbAVzyfge5Sal+aMnZZTZmXUp3qKAMq1pKrQh84YCjuO+rRzMFoSGnScxHYYHErdmD/Jq7WUGxsKgpRKJI=
+    template:
+      - "`%{repository_slug}` \n*%{result}* build (<%{build_url}|#%{build_number}>) by %{author} for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+      - "Duration: *%{duration}*"
+      - "Message: %{message}"
