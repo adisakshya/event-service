@@ -5,9 +5,17 @@ import * as AWS from "aws-sdk";
 import {EventRepo} from "./event.repo";
 import {EventService} from "./event.service";
 import {EventController} from "./event.controller";
+import {NotificationModule} from "@notification/notification.module";
 
 @Module({
     providers: [
+        {
+            provide: 'AWS-SNS',
+            inject: [Logger],
+            useFactory: () => new AWS.SNS({
+                region: 'us-east-1'
+            }),
+        },
         {
             provide: EventRepo,
             inject: [Logger, ApiConfigService],
@@ -23,7 +31,10 @@ import {EventController} from "./event.controller";
         EventService,
     ],
     controllers: [EventController],
-    imports: [CommonModule],
+    imports: [
+        NotificationModule,
+        CommonModule
+    ],
 })
 export class EventModule {
 }

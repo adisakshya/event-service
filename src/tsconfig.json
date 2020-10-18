@@ -15,8 +15,14 @@
       "@common/*": [
         "src/common/*"
       ],
+      "@entity/*": [
+        "src/database/entity/*"
+      ],
       "@event/*": [
         "src/event/*"
+      ],
+      "@notification/*": [
+        "src/notification/*"
       ]
     }
   }
