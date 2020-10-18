@@ -16,7 +16,7 @@ import {NotificationModule} from "@notification/notification.module";
                 host: config.dbHost,
                 entities: [Notification],
                 logging: !config.isProduction,
-                synchronize: true,
+                synchronize: false,
             }),
             imports: [CommonModule],
             inject: [ApiConfigService]
