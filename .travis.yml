@@ -1,0 +1,70 @@
+language: node_js
+node_js: 
+  - "12"
+services:
+  - docker
+
+env:
+  global:
+    - IMAGE_NAME=event-service
+
+stages:
+  - build
+  - test
+  - name: deploy-dev
+    if: branch = development AND type = push AND fork = false
+  - name: deploy-prod
+    if: branch = production AND type = push AND fork = false
+
+before_script:
+  # Move to source directory
+  - cd src
+  # Versioning
+  - VERSION="$(awk '$2 == "EVENT_SERVICE_VERSION" { print $3; exit }' Dockerfile)"
+
+jobs:
+  include:
+    - stage: build
+      script:
+        # Install dependencies
+        - yarn install
+        # Build source
+        - yarn build
+    - stage: test
+      script:
+        # Install dependencies
+        - yarn install
+        # Run tests
+        - yarn test --passWithNoTests
+    - stage: deploy-dev
+      script:
+        # Build docker image
+        - docker build -t $IMAGE_NAME .
+        # List docker images
+        - docker images
+        # Push dev-docker image to dockerhub
+        - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+        - docker tag $IMAGE_NAME:latest $DOCKER_USER/$IMAGE_NAME:$VERSION-dev
+        - docker push $DOCKER_USER/$IMAGE_NAME:$VERSION-dev
+    - stage: deploy-prod
+      script:
+        # Build docker image
+        - docker build -t $IMAGE_NAME .
+        # List docker images
+        - docker images
+        # Push prod-docker image to dockerhub
+        - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+        - docker tag $IMAGE_NAME:latest $DOCKER_USER/$IMAGE_NAME:$VERSION-prod
+        - docker tag $IMAGE_NAME:latest $DOCKER_USER/$IMAGE_NAME:latest
+        - docker push $DOCKER_USER/$IMAGE_NAME:latest
+        - docker push $DOCKER_USER/$IMAGE_NAME:$VERSION-prod
+
+notifications:
+  email: false
+  slack:
+    rooms:
+      secure: Ni/+kfHpr/OhleXmnrdg0GJMoc/FVtqcWvWY/WzF9X1hKXqVNEqmwsXlxcnraCSZE1l9QuYvKwtqG9KnVA2iuSb2VKX6QE/RwmpGc0Lk0GgbqvCvYtLG/0gZNi7ohFlawUYS2DZJf+ugMFvcLEe6ahZTFMTtSIl5Glxn5jnpFcKDOZI6myE877Ur6GAxIOlgBw+bBiXSFaf8aeQOaVSH/R25R+An4tlmy6FvHIHcWoohKRP2QMxTuH81LMx19s59j9NO9OijWj6SS5JQSR60xx+q4TvIV7WuKqRAbWfIhwzb4yaCF1JDh8B0mvhs4hsVXKu2MbMN3LLpOBHF0BGGM0OCiAcQd5LKO/u2gUBLyva5nc0KGY3WHNYvyyRqfZg4Wg2mf6vaZRb5Z+G3cfSze9jH6UtoKzwdJnsRK4TEzpcVk9f8xkMddkbPVSlf0UNrIDEnIvrJlR9dldiNTdmEz+YdzgTP+lk5uhT0bsan0gsRE1uBLZKW2DbPEfkbq+r8vBbdiQjP5XB6EQaphzyweGNgk29cKuoYqelXPJyvS4eehaT1zYQNlF0whWZGWhOp8pNfQ1h9K8Irkst5/Y6ksMF81XWANGnVK6rXopiXBt82PS0SkBzDKgNQc6et9/nymbVlTEBGrZ1jElbwryWXY5GbXMnlzTq5SpG3foIZ1l4=
+    template:
+      - "`%{repository_slug}` \n*%{result}* build (<%{build_url}|#%{build_number}>) by %{author} for commit (<%{compare_url}|%{commit}>) on branch `%{branch}`."
+      - "Duration: *%{duration}*"
+      - "Message: %{message}"

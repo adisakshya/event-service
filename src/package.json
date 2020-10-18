@@ -1,10 +1,10 @@
 {
   "name": "event-service",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "version": "1.0.0",
+  "description": "Event manager for event-driven microservices architecture",
+  "author": "Adisakshya Chauhan",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "ISC",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
