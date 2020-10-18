@@ -1,0 +1,37 @@
+language: node_js
+node_js: 
+  - "12"
+cache:
+  yarn: true
+  directories:
+    - "node_modules"
+services:
+  - docker
+
+env:
+  global:
+    - IMAGE_NAME=continuous-improvement/event-service
+
+stages:
+  - build
+  - docker-build
+  - test
+
+before_script:
+  # Move to source directory
+  - cd src
+  # Install dependencies
+  - yarn install
+
+jobs:
+  include:
+    - stage: build
+      script:
+        - yarn build
+    - stage: docker-build
+      script:
+        - docker build -t $IMAGE_NAME .
+        - docker images
+    - stage: test
+      script:
+        - yarn test
