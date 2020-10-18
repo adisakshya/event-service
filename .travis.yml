@@ -20,18 +20,24 @@ stages:
 before_script:
   # Move to source directory
   - cd src
-  # Install dependencies
-  - yarn install
 
 jobs:
   include:
     - stage: build
       script:
+        # Install dependencies
+        - yarn install
+        # Build source
         - yarn build
     - stage: docker-build
       script:
+        # Build docker image
         - docker build -t $IMAGE_NAME .
+        # List docker images
         - docker images
     - stage: test
       script:
-        - yarn test
+        # Install dependencies
+        - yarn install
+        # Run tests
+        - yarn test --passWithNoTests
