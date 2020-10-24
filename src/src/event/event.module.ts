@@ -18,7 +18,7 @@ import {NotificationModule} from "@notification/notification.module";
         },
         {
             provide: EventRepo,
-            inject: [Logger, ApiConfigService],
+            inject: [ApiConfigService],
             useFactory: (config: ApiConfigService) => new EventRepo(
                 new AWS.DynamoDB.DocumentClient({
                     "apiVersion": "2012-08-10",
