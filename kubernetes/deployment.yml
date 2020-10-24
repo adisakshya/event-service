@@ -1,26 +1,26 @@
-# Event Service Deployment
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-service-deployment
+  name: dev-event-service
   namespace: development
   resourceVersion: '1.0.0'
+  labels:
+    app: dev-event-service
 spec:
   selector:
     matchLabels:
-      app: event-service
-  replicas: 2
+      app: dev-event-service
+  replicas: 1
   template:
     metadata:
       labels:
-        app: event-service
+        app: dev-event-service
     spec:
       containers:
-        - name: event-service
+        - name: dev-event-service
           image: adisakshya/event-service:1.0.0-dev
           ports:
-            - containerPort: 3000
+            - containerPort: 80
           env:
             - name: NODE_ENV
               value: development
@@ -57,5 +57,5 @@ spec:
             - name: EVENT_TOPIC_ARN
               valueFrom:
                 secretKeyRef:
-                  name: dev-event-sns-topics
+                  name: dev-sns-topics-secrets
                   key: event-topic
