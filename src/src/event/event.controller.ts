@@ -74,7 +74,9 @@ export class EventController {
                 const createdNotification = await this.notificationService.create({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    reminderId: eventMessage.itemId,
+                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemId: eventMessage.itemId,
+                    notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
                 });
                 await this.eventService.notificationCreated({
@@ -88,7 +90,9 @@ export class EventController {
                 const updatedNotification = await this.notificationService.update({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    reminderId: eventMessage.itemId,
+                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemId: eventMessage.itemId,
+                    notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
                 });
                 if(!updatedNotification) {
@@ -105,7 +109,9 @@ export class EventController {
                 const deletedNotification = await this.notificationService.delete({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    reminderId: eventMessage.itemId,
+                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemId: eventMessage.itemId,
+                    notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
                 });
                 if(!deletedNotification) {
