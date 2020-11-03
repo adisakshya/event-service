@@ -11,9 +11,9 @@ export class NotificationService {
     
     public async create(notificationReq: NotificationRequest): Promise<Notification> {
         this.logger.log(`Creating notification for user ${notificationReq.userId} corresponding to ${notificationReq.itemType} ${notificationReq.itemId}`);
-        const {deliverAt, itemType, notificationData, userId} = notificationReq;
+        const {deliverAt, itemType, itemId, notificationData, userId, userEmail} = notificationReq;
         const notification = await Notification.create({
-            id: this.generateID(), deliverAt, itemType, userId, notificationData
+            id: this.generateID(), deliverAt, itemType, itemId, userId, userEmail, notificationData
         }).save();
         this.logger.log(`Created notification for user ${notificationReq.userId} corresponding to ${notificationReq.itemType} ${notificationReq.itemId}`);
         return notification;
@@ -22,7 +22,7 @@ export class NotificationService {
     public async update(notificationReq: NotificationRequest): Promise<Notification> {
         this.logger.log(`Updating notification for user ${notificationReq.userId} corresponding to ${notificationReq.itemType} ${notificationReq.itemId}`);
         const {deliverAt, itemId, notificationData, userId} = notificationReq;
-        const notification = await Notification.findNotificationsByReminderId(userId, itemId);
+        const notification = await Notification.findNotificationsByItemId(userId, itemId);
         if(!notification) {
             this.logger.warn(`Update failed: Notification for ${notificationReq.itemType} ${notificationReq.itemId} doesn't exists`);
             return null;
@@ -36,7 +36,7 @@ export class NotificationService {
     public async delete(notificationReq: NotificationRequest): Promise<{ id: string; item: Notification; }> {
         this.logger.log(`Deleting notification for user ${notificationReq.userId} corresponding to ${notificationReq.itemType} ${notificationReq.itemId}`);
         const {itemId, userId} = notificationReq;
-        const notification = await Notification.findNotificationsByReminderId(userId, itemId);
+        const notification = await Notification.findNotificationsByItemId(userId, itemId);
         if(!notification) {
             this.logger.warn(`Deletion failed: Notification for ${notificationReq.itemType} ${notificationReq.itemId} doesn't exists`);
             return null;

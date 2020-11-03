@@ -16,14 +16,20 @@ export class Notification extends UserItemEntity {
     itemType: string;
 
     /**
+     * Item associated with notification
+     */
+    @Column({nullable: false})
+    itemId: string;
+
+    /**
      * Notification Data - Stringified JSON data
      */
     @Column({nullable: false})
     notificationData: string;
 
-    public static findNotificationsByReminderId(userId: string, reminderId: string): Promise<Notification> {
+    public static findNotificationsByItemId(userId: string, itemId: string): Promise<Notification> {
         return this.findOne({
-            where: {userId, reminderId},
+            where: {userId, itemId},
             order: {createdAt: "DESC"}
         });
     }
