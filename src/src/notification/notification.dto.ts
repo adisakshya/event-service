@@ -2,5 +2,7 @@ export class NotificationRequest {
     userId: string;
     userEmail: string;
     deliverAt: Date;
-    reminderId: string;
+    itemType: string;
+    itemId: string;
+    notificationData: string;
 }
