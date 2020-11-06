@@ -37,44 +37,48 @@ export class EventController {
             this.logger.error('Event item-type is undefined');
             return;
         }
-        switch(eventData.MessageAttributes.eventItemType.Value) {
+        // Get event attributes and data
+        const eventType = eventData.MessageAttributes.eventType.Value;
+        const eventItemType = eventData.MessageAttributes.eventItemType.Value;
+        const eventMessage = JSON.parse(eventData.Message);
+        // Handle event
+        switch(eventItemType) {
             case 'reminder':
-                await this.reminderEvent(eventData);
+                await this.reminderEvent(eventType, eventMessage);
                 break;
             case 'notification':
-                await this.notificationEvent(eventData);
+                await this.notificationEvent(eventItemType, eventType, eventMessage);
                 break;
             default:
                 this.logger.error('Unknown event-item');
         }
     }
 
-    private async reminderEvent(eventData: any): Promise<void> {
-        this.logger.log(`Recieved ${eventData.MessageAttributes.eventType.Value} event`);
-        switch(eventData.MessageAttributes.eventType.Value) {
+    private async reminderEvent(eventType: string, eventMessage: any): Promise<void> {
+        this.logger.log(`Recieved ${eventType} event`);
+        switch(eventType) {
             case 'reminder:created':
-                await this.eventService.reminderAdded(JSON.parse(eventData.Message));
+                await this.eventService.reminderAdded(eventMessage);
                 break;
             case 'reminder:updated':
-                await this.eventService.reminderUpdated(JSON.parse(eventData.Message));
+                await this.eventService.reminderUpdated(eventMessage);
                 break;
             case 'reminder:deleted':
-                await this.eventService.reminderDeleted(JSON.parse(eventData.Message));
+                await this.eventService.reminderDeleted(eventMessage);
                 break;
             default:
                 this.logger.error('Unknown event-type');
         }
     }
 
-    private async notificationEvent(eventData: any): Promise<void> {
-        this.logger.log(`Recieved ${eventData.MessageAttributes.eventType.Value} event`);
-        const eventMessage = JSON.parse(eventData.Message);
-        switch(eventData.MessageAttributes.eventType.Value) {
+    private async notificationEvent(eventItemType: string, eventType: string, eventMessage: any): Promise<void> {
+        this.logger.log(`Recieved ${eventType} event`);
+        switch(eventType) {
             case 'notification:create':
                 const createdNotification = await this.notificationService.create({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemType: eventItemType,
                     itemId: eventMessage.itemId,
                     notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
@@ -90,7 +94,7 @@ export class EventController {
                 const updatedNotification = await this.notificationService.update({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemType: eventItemType,
                     itemId: eventMessage.itemId,
                     notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
@@ -109,7 +113,7 @@ export class EventController {
                 const deletedNotification = await this.notificationService.delete({
                     userId: eventMessage.userId,
                     userEmail: eventMessage.userEmail,
-                    itemType: eventData.MessageAttributes.eventItemType.Value,
+                    itemType: eventItemType,
                     itemId: eventMessage.itemId,
                     notificationData: eventMessage.eventData,
                     deliverAt: eventMessage.eventData.date
