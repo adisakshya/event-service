@@ -23,7 +23,7 @@ import {NotificationModule} from "@notification/notification.module";
                 new AWS.DynamoDB.DocumentClient({
                     "apiVersion": "2012-08-10",
                     "region":"us-east-1",
-                    "endpoint": config.isProduction ? undefined : "http://192.168.99.100:8000"               
+                    "endpoint": config.isProduction ? undefined : "http://192.168.56.100:8000"
                 }),
                 config.eventTable
             ),
