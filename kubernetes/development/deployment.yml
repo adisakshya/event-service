@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-event-service
+  namespace: development
+  labels:
+    app: dev-event-service
+spec:
+  selector:
+    matchLabels:
+      app: dev-event-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: dev-event-service
+    spec:
+      containers:
+        - name: dev-event-service
+          image: adisakshya/event-service:1.0.0-dev
+          ports:
+            - containerPort: 80
+          env:
+            - name: NODE_ENV
+              value: development
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: dev-notification-db-secrets
+                  key: host
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: dev-notification-db-secrets
+                  key: name
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: dev-notification-db-secrets
+                  key: password
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: dev-notification-db-secrets
+                  key: user
+            - name: EVENT_STORE
+              valueFrom:
+                secretKeyRef:
+                  name: dev-event-store-secrets
+                  key: name
+            - name: EVENT_QUEUE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: dev-event-store-secrets
+                  key: event_queue
+            - name: EVENT_TOPIC_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: dev-sns-topics-secrets
+                  key: event_topic
