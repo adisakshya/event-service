@@ -2,7 +2,7 @@ import * as AWS from "aws-sdk";
 import {customAlphabet} from "nanoid";
 import Event from "./event.dto";
 
-type NewEvent = Omit<Event, | "createdAt" | "id" | "ttl">
+type NewEvent = Omit<Event, "createdAt" | "id" | "ttl">
 
 export class EventRepo {
     private readonly generateID = customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 22);
