@@ -4,4 +4,4 @@
 
 ## Architecture
 
-![Reminder Service Architecture](./assets/event-service-architecture.png)
+![Event Service Architecture](./assets/event-service-architecture.png)
