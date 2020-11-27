@@ -4,4 +4,4 @@
 
 ## Architecture
 
-![Event Service Architecture](./assets/event-service-architecture.png)
+![Event Service Architecture](https://raw.githubusercontent.com/adisakshya/event-service/master/assets/event-service-architecture.png)
