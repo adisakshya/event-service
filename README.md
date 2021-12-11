@@ -9,11 +9,11 @@
 
 This microservice is the heart of the system which maintain a catalogue of all the events generated for operations happening in the system. The place where all these events are stored is called the event-store, which in this case is implemented using DynamoDB. 
 
-An event is a representation of the state of an entity-object at a particular point in time. So storing events corresponding to an entity-object over a period of time can tell us how that entity-object changed its state over that period of time and we never lose data despite having delete operations in our system.
-
-After processing and storing the incoming event in the event-store this service can pack the received event with some additional information depending on event-type and sends a new event-message to a relevant AWS SNS topic where the desired consumer is ready to consume this event and perform the required operations in response and this consumer may generate more events which may be consumed by some other services.
-
-The event-service is also interfaced with a PostgreSQL database as well for managing CRUD operations on the notification-entity based on incoming events. Notifications stored in the database are fetched by the [notification-scheduler](https://github.com/adisakshya/custom-scheduler) and forwarded to the [notification-service](https://github.com/adisakshya/notification-service) which then send these notifications to the clients.
+- An event is a representation of the state of an entity-object at a particular point in time. 
+- So storing events corresponding to an entity-object over a period of time can tell us how that entity-object changed its state over that period of time and we never lose data despite having delete operations in our system.
+- After processing and storing the incoming event in the event-store this service can pack the received event with some additional information depending on event-type and sends a new event-message to a relevant AWS SNS topic where the desired consumer is ready to consume this event and perform the required operations in response and this consumer may generate more events which may be consumed by some other services. 
+- The event-service is also interfaced with a PostgreSQL database as well for managing CRUD operations on the notification-entity based on incoming events. 
+- Notifications stored in the database are fetched by the [notification-scheduler](https://github.com/adisakshya/custom-scheduler) and forwarded to the [notification-service](https://github.com/adisakshya/notification-service) which then send these notifications to the clients.
 
 ## Operating Instructions
 
